@@ -64,6 +64,11 @@ export const login = async ctx => {
       return;
     }
     ctx.body = user.serialize();
+    const token = user.generateToken();
+    ctx.cookies.set('access_token', token, {
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+      httpOnly: true,
+    });
   } catch (e) {
     ctx.throw(500, e);
   }
@@ -76,4 +81,7 @@ export const check = async ctx => {
   }
   ctx.body = user;
 };
-export const logout = async ctx => {};
+export const logout = async ctx => {
+  ctx.cookies.set('access_token');
+  ctx.status = 204;
+};
